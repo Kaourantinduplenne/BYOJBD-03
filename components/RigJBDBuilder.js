@@ -17,9 +17,13 @@ export default function RigJBDBuilder() {
     setArrows(arrows.map(a => a.id === id ? { ...a, ...newData } : a));
   };
 
+  const rotateArrow = (id) => {
+    setArrows(arrows.map(a => a.id === id ? { ...a, rotate: (a.rotate + 30) % 360 } : a));
+  };
+
   return (
     <div className="p-4 space-y-4 w-[1123px] h-[794px] border-2 border-black overflow-auto">
-      <h1 className="text-xl font-bold text-center">Rig JBD Builder with Rotating Arrows</h1>
+      <h1 className="text-xl font-bold text-center">Rig JBD Builder with Double-Click Arrow Rotation</h1>
       <button onClick={addArrow} className="bg-blue-600 text-white px-4 py-2 rounded">+ Add Blue Arrow</button>
       <div className="relative w-full h-[500px] border mt-4 bg-white">
         {arrows.map(a => (
@@ -27,19 +31,15 @@ export default function RigJBDBuilder() {
             size={{ width: a.w, height: a.h }}
             position={{ x: a.x, y: a.y }}
             onDragStop={(e, d) => updateArrow(a.id, { x: d.x, y: d.y })}
-            onResizeStop={(e, dir, ref, delta, pos) => {
-              updateArrow(a.id, {
-                w: parseInt(ref.style.width),
-                h: parseInt(ref.style.height),
-                ...pos
-              });
-            }}
+            onResizeStop={(e, dir, ref, delta, pos) =>
+              updateArrow(a.id, { w: parseInt(ref.style.width), h: parseInt(ref.style.height), ...pos })}
             style={{
               position: 'absolute',
               overflow: 'visible'
             }}
           >
             <div
+              onDoubleClick={() => rotateArrow(a.id)}
               style={{
                 width: '100%',
                 height: '100%',
@@ -50,19 +50,12 @@ export default function RigJBDBuilder() {
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                cursor: 'pointer'
               }}
             >
-              ↔
+              ↻
             </div>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              value={a.rotate}
-              onChange={(e) => updateArrow(a.id, { rotate: parseInt(e.target.value) })}
-              className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 w-24"
-            />
           </Rnd>
         ))}
       </div>
